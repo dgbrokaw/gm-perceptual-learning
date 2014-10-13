@@ -1,0 +1,160 @@
+<!doctype html>
+<meta charset='utf-8'>
+    <head>
+        <title>GM Experiment</title>
+        <!-- Load jQuery -->
+        <script src="scripts/jquery-1.11.1.min.js"></script>
+        <!-- Load D3 for GM -->
+        <script src="libs/d3/d3.min.js"></script>
+        <!-- Load tree.js -->
+        <script src="libs/tree.js/tree.js"></script>
+        <!-- Load Grasping Math -->
+        <script src="scripts/plugins/graspingmath.js"></script>
+        <!-- Load the jspsych library and plugins -->
+        <script src="scripts/jspsych.js"></script>
+        <script src="scripts/plugins/jspsych-text.js"></script>
+        <script src="scripts/plugins/jspsych-gm-solve-eq.js"></script>
+        <script src="scripts/plugins/jspsych-gm-multiple-choice.js"></script>
+        <!-- Load the stylesheet -->
+        <!--<link href="css/jspsych.css" type="text/css" rel="stylesheet"></link>-->
+        <link rel="stylesheet" href="libs/fonts/fonts.css"/>
+
+
+    </head>
+
+    <style>
+        .jspsych-display-element {
+            min-width:768px;
+            min-height:1024px;
+            max-width:768px;
+            max-height:1024px;
+            display:-webkit-box;
+            -webkit-box-pack:center;
+        }
+
+        div + div {
+          margin-top:4px;
+        }
+    </style>
+
+    <body>
+        <div id="jspsych_target"></div>
+    </body>
+
+    <script type="text/javascript">
+
+$('#jspsych_target').css('outline', '#000000 solid 2px');
+
+var welcomeMessage = '<div id="welcome"><p>Welcome to the experiment. Press enter to begin.</p></div>';
+
+var welcomeBlock = {
+    type: 'text'
+   ,text: [welcomeMessage]
+   ,timing_post_trial: 1500
+};
+
+var pretestInstructions = '<div id="pretestInstructions" style="width:75%;">' +
+                             '<p>' +
+                                'Here you will be asked to determine value of the variable in a series of algebra equations. ' +
+                                'Enter your answer in the text box, and press the submit button to move on to the next ' +
+                                'question. If you do not know an answer, you may make your best guess, or press the submit ' +
+                                'button. However, a blank answer is counted as a wrong answer and you will recieve no ' +
+                                'points for it. Press enter to begin.' +
+                             '</p>' +
+                          '</div>';
+
+var pretestInstructionBlock = {
+  type: 'text'
+ ,text: [pretestInstructions]
+ ,timing_post_trial: 1500
+};
+
+var pretestBlock = {
+  type: 'gm-solve-eq'
+ ,problems: [{'equation':'x+2=3'
+             ,'variable': 'x'
+             ,'val': '1'}]
+ ,timing_post_trial: 1000
+};
+
+var testInstructions = '<div id="testInstructions" style="width:75%;">' +
+                         '<p>' +
+                            'In the following section you will be given a target equation and 4 additional equations in boxes. ' +
+                            'One of these 4 boxed equations is a logical rearrangement of the target equation. ' +
+                            'You must decide which equation is the logical rearrangement and what element needs to be moved ' +
+                            'for it to match the target equation. Once you have moved an element, the computer will notify you ' +
+                            'as to whether you have made the correct decision or not. If you have not made the correct decision, ' +
+                            'the system will animate the equation you should have selected.' +
+                         '</p>' +
+                         '<p>' +
+                            'Remember, there is only one correct answer, and once you have moved any element your answer will be recorded.' +
+                         '</p>' +
+                       '</div>';
+
+var testInstructionBlock = {
+  type: 'text'
+ ,text: [testInstructions]
+ ,timing_post_trial: 1500
+};
+
+var testingBlock = {
+    type: 'gm-multiple-choice'
+   ,problems: [{'solution':'x=3-2'
+               ,'A':'x-2=3'
+               ,'B':'3-x=2'
+               ,'C':'x=2-3'
+               ,'D':'x+2=3'
+               ,'correctAnswer': 'D'}
+              ,{'solution':'x=2+3'
+               ,'A':'x-2=3'
+               ,'B':'2-x=3'
+               ,'C':'3-2=x'
+               ,'D':'x=3-2'
+               ,'correctAnswer': 'A'}]
+   ,timing_post_trial: 1000
+};
+
+var posttestInstructions = '<div id="posttestInstructions" style="width:75%;">' +
+                             '<p>' +
+                                'Welcome to the post-test. ' +
+                                'Here you will be asked to determine value of the variable in a series of algebra equations. ' +
+                                'Enter your answer in the text box, and press the submit button to move on to the next ' +
+                                'question. If you do not know an answer, you may make your best guess, or press the submit ' +
+                                'button. However, a blank answer is counted as a wrong answer and you will recieve no ' +
+                                'points for it. Press enter to begin.' +
+                             '</p>' +
+                           '</div>';
+
+var posttestInstructionBlock = {
+  type: 'text'
+ ,text: [posttestInstructions]
+ ,timing_post_trial: 1500
+};
+
+var posttestBlock = {
+  type: 'gm-solve-eq'
+ ,problems: [{'equation':'x+2=3'
+             ,'variable': 'x'
+             ,'val': '1'}]
+ ,timing_post_trial: 1000
+};
+
+function startExperiment() {
+    jsPsych.init({
+        display_element: $('#jspsych_target')
+       ,experiment_structure: [welcomeBlock
+                              ,pretestInstructionBlock
+                              ,pretestBlock
+                              ,testInstructionBlock
+                              ,testingBlock
+                              ,posttestInstructionBlock
+                              ,posttestBlock]
+       ,on_finish: function() {
+          jsPsych.dataAPI.displayData('json');
+          jsPsych.dataAPI.localSave('data.json', 'json')
+        }
+    });
+};
+
+startExperiment();
+    </script>
