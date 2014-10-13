@@ -9,7 +9,7 @@
         <!-- Load tree.js -->
         <script src="libs/tree.js/tree.js"></script>
         <!-- Load Grasping Math -->
-        <script src="scripts/plugins/graspingmath.js"></script>
+        <script src="libs/graspingmath.min.js"></script>
         <!-- Load the jspsych library and plugins -->
         <script src="scripts/jspsych.js"></script>
         <script src="scripts/plugins/jspsych-text.js"></script>
@@ -66,7 +66,7 @@ var pretestInstructions = '<div id="pretestInstructions" style="width:75%;">' +
 var pretestInstructionBlock = {
   type: 'text'
  ,text: [pretestInstructions]
- ,timing_post_trial: 1500
+ ,timing_post_trial: 150
 };
 
 var pretestBlock = {
@@ -74,7 +74,7 @@ var pretestBlock = {
  ,problems: [{'equation':'x+2=3'
              ,'variable': 'x'
              ,'val': '1'}]
- ,timing_post_trial: 1000
+ ,timing_post_trial: 100
 };
 
 var testInstructions = '<div id="testInstructions" style="width:75%;">' +
@@ -94,7 +94,7 @@ var testInstructions = '<div id="testInstructions" style="width:75%;">' +
 var testInstructionBlock = {
   type: 'text'
  ,text: [testInstructions]
- ,timing_post_trial: 1500
+ ,timing_post_trial: 100
 };
 
 var testingBlock = {
@@ -105,13 +105,13 @@ var testingBlock = {
                ,'C':'x=2-3'
                ,'D':'x+2=3'
                ,'correctAnswer': 'D'}
-              ,{'solution':'x=2+3'
+              ,{'solution':'x=3+2'
                ,'A':'x-2=3'
                ,'B':'2-x=3'
                ,'C':'3-2=x'
                ,'D':'x=3-2'
                ,'correctAnswer': 'A'}]
-   ,timing_post_trial: 1000
+   ,timing_post_trial: 100
 };
 
 var posttestInstructions = '<div id="posttestInstructions" style="width:75%;">' +
@@ -128,7 +128,7 @@ var posttestInstructions = '<div id="posttestInstructions" style="width:75%;">' 
 var posttestInstructionBlock = {
   type: 'text'
  ,text: [posttestInstructions]
- ,timing_post_trial: 1500
+ ,timing_post_trial: 150
 };
 
 var posttestBlock = {
@@ -136,7 +136,7 @@ var posttestBlock = {
  ,problems: [{'equation':'x+2=3'
              ,'variable': 'x'
              ,'val': '1'}]
- ,timing_post_trial: 1000
+ ,timing_post_trial: 100
 };
 
 function startExperiment() {
@@ -149,12 +149,42 @@ function startExperiment() {
                               ,testingBlock
                               ,posttestInstructionBlock
                               ,posttestBlock]
-       ,on_finish: function() {
+       ,on_finish: function(block) {
           jsPsych.dataAPI.displayData('json');
           jsPsych.dataAPI.localSave('data.json', 'json')
         }
     });
-};
+}
+
+// Example save_trial code, which needs to be adapted:
+// function save_trial(idx, trial, finished_callback) {
+//   data = {
+//     // settings
+//     trial_idx: idx
+//    ,cond: trial.mode
+//    ,pbp: trial.pbp
+//    ,train_start: trial.train_start
+//    ,train_end: trial.train_end
+//    ,solve_start: trial.solve_start
+//    ,solve_end: trial.solve_end
+//   };
+//   if (test_mode) {
+//     console.log('would transmit ', JSON.stringify([data]));
+//     finished_callback();
+//   } else {
+//     $.ajax({
+//       type: 'post',
+//       cache: false,
+//       url: 'db_submit.php',
+//       data: {json: JSON.stringify([data])
+//             ,subject_id: subject_id},
+//       success: function(data) {
+//         //console.log(data);
+//         finished_callback();
+//       }
+//     });
+//   }
+// }
 
 startExperiment();
     </script>

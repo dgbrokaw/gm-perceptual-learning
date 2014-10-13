@@ -229,52 +229,23 @@
   			.duration(2000)
   			.style('border-color', 'black');
   		// determine action needed to be taken
-  		// var solutionActionTimer = setTimeout(function() {
-  		// 	var solAscii = sol.getLastModel().to_ascii();
-	  	// 	var correctAnsTree = getDLOfCorrectAnswer().getLastModel()
-	  	// 	   ,correctAnsTreeNodes = correctAnsTree.select_all().slice(1);
-	  	// 	var possibleMoveActions = [];
-	  	// 	var correctAction = []
-	  	// 	for (var i=0; i<correctAnsTreeNodes.length; i++) {
-	  	// 		possibleMoveActions = possibleMoveActions.concat(correctAnsTree.getMoveActions([correctAnsTreeNodes[i]]));
-	  	// 	}
-	  	// 	for (var i=0; i<possibleMoveActions.length; i++) {
-	  	// 		var possibleCorrectActions = [];
-	  	// 		var action = possibleMoveActions[i];
-	  	// 		action.run();
-	  	// 		if (action.newTree.to_ascii()===solAscii) {
-	  	// 			correctAction.push(action.name);
-	  	// 			//possibleCorrectActions.push(action);
-	  	// 			trialData.correctAction = correctAction;
-	  	// 			action.newTree = action.oldTree;
-	  	// 			getDLOfCorrectAnswer().getLastRow().view.interaction_handler.highlight_nodes(action.nodes || []);
-	  	// 			var performActionTimer = setTimeout(function() {
-	  	// 				clearTimeout(performActionTimer);
-	  	// 				action.doInPlace();
-		  // 				action.newTree.hide_nodes();
-		  // 				getDLOfCorrectAnswer().getLastRow().view.update_all();
-	  	// 			}, 1500);
-	  	// 			break;
-	  	// 		}
-	  	// 	}
-	  	// }, 4500);
   		var solutionActionTimer = setTimeout(function() {
   			var solAscii = sol.getLastModel().to_ascii();
 	  		var correctAnsTree = getDLOfCorrectAnswer().getLastModel()
-	  		   ,correctAnsTreeNodes = correctAnsTree.select_all().slice(1).filter(function(x) {return x.is_group('add')
-	  		   																																										 || x.is_group('sub')
-	  		   																																										 || x.is_group('num')
-	  		   																																										 || x.is_group('var')});
-	  		var correctAction = []
+	  		   ,correctAnsTreeNodes = correctAnsTree.select_all().slice(1);
 	  		var possibleMoveActions = [];
+	  		var correctAction = []
 	  		for (var i=0; i<correctAnsTreeNodes.length; i++) {
 	  			possibleMoveActions = possibleMoveActions.concat(correctAnsTree.getMoveActions([correctAnsTreeNodes[i]]));
 	  		}
 	  		for (var i=0; i<possibleMoveActions.length; i++) {
+	  			var possibleCorrectActions = [];
 	  			var action = possibleMoveActions[i];
 	  			action.run();
 	  			if (action.newTree.to_ascii()===solAscii) {
 	  				correctAction.push(action.name);
+	  				//possibleCorrectActions.push(action);
+	  				trialData.correctAction = correctAction;
 	  				action.newTree = action.oldTree;
 	  				getDLOfCorrectAnswer().getLastRow().view.interaction_handler.highlight_nodes(action.nodes || []);
 	  				var performActionTimer = setTimeout(function() {
@@ -284,43 +255,9 @@
 		  				getDLOfCorrectAnswer().getLastRow().view.update_all();
 	  				}, 1500);
 	  				break;
-	  			// }
-	  			} else {
-	  				var secondTreeNodes = action.newTree.select_all().slice(1).filter(function(x) {return x.is_group('add')
-	  		   																																										 || x.is_group('sub')
-	  		   																																										 || x.is_group('num')
-	  		   																																										 || x.is_group('var')});
-	  				var secondPossibleMoveActions = [];
-	  				for (var i=0; i<secondTreeNodes.length; i++) {
-	  					secondPossibleMoveActions.concat(action.newTree.getMoveActions([secondTreeNodes[i]]))
-	  				}
-	  				for (var i=0; i<secondPossibleMoveActions.length; i++) {
-	  					var secondAction = secondPossibleMoveActions[i];
-	  					secondAction.run();
-	  					if (secondAction.newTree.to_ascii()===solAscii) {
-	  						correctAction.push(action.name, secondAction.name);
-	  						action.newTree = action.oldTree;
-	  						getDLOfCorrectAnswer().getLastRow().view.interaction_handler.highlight_nodes(action.nodes || []);
-	  						var performActionTimer = setTimeout(function() {
-			  					clearTimeout(performActionTimer);
-			  					action.doInPlace();
-				  				action.newTree.hide_nodes();
-				  				getDLOfCorrectAnswer().getLastRow().view.update_all();
-				  				secondAction.oldTree = action.newTree;
-				  				secondAction.newTree = secondAction.oldTree;
-				  				getDLOfCorrectAnswer().getLastRow().view.interaction_handler.highlight_nodes(secondAction.nodes || []);
-				  				var performSecondActionTimer = setTimeout(function() {
-				  					clearTimeout(performSecondActionTimer);
-				  					secondAction.doInPlace();
-					  				secondAction.newTree.hide_nodes();
-					  				getDLOfCorrectAnswer().getLastRow().view.update_all();
-				  				}, 1500);
-			  				}, 1500);
-	  					}
-	  				}
 	  			}
 	  		}
-  		}, 6000);
+	  	}, 4500);
 
   		// call continue function
   		var nextBlockTimer = setTimeout(function() {

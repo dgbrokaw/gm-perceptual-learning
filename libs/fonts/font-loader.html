@@ -1,0 +1,51 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Font Loader Test</title>
+<script src="../d3.min.js"></script>
+<script src="../../libs/Font.js/Font.js"></script>
+<script src="../../src/visualization/font-loader.js"></script>
+<body>
+<script>
+var FontLoader = function() {
+  var fonts = []
+     ,dispatch = d3.dispatch("load", "error");
+
+  var loader = function () {
+    var to_load = N = fonts.length;
+    var errors = [];
+    if (N == 0) return;
+    for (var i=0; i<N; i++) {
+      var f = new Font();
+      f.onload = function () {
+        if (--to_load == 0) {
+          if (errors.length > 0) dispatch.error(errors);
+          else dispatch.load();
+        }
+      }
+      f.onerror = function(err) {
+        errors.push(err);
+        if (--to_load == 0) dispatch.error(errors);
+      }
+      f.fontFamily = fonts[i].family;
+      f.src = fonts[i].src || f.fontFamily;
+      fonts[i].handler = f;
+    }
+  }
+
+  loader.fonts = function(arg) {
+    if (arguments.length == 0) return fonts;
+    fonts = arg;
+    return this;
+  }
+
+  return d3.rebind(loader, dispatch, "on");
+}
+
+fl = FontLoader()
+  .fonts([{family: "CrimsonItalic", src: "./crimson-italic-webfont.ttf"}
+  	     ,{family: "CrimsonRoman", src: "./crimson-roman-webfont.ttf"}])
+  .on('load', function() { console.log('loaded') })
+	.on('error', function(err) { console.log('error:', err) });
+console.log('start loading...');
+fl();
+</script>
