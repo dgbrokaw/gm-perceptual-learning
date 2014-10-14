@@ -53,60 +53,102 @@
 			 ,correctness : false
 			};
 
-			display_element.append($('<div>', {
-	  		'id': 'container'
-	  	 ,'align': 'center'
-	  	 ,'width': '576px'
-	  	}));
-
-			$('#container').append($('<div>', {
-				'id': 'gm-eq'
-			 ,'html': equation
-			 ,'align': 'center'
-	  	 ,'height': '256px'
-	  	 ,'float': 'left'
-			}));
-			var eq = DerivationList.createStandalone($('#gm-eq')[0], {interactive:false});
-			eq.getLastRow().view.update_all();
-
-			$('#container').append($('<div>', {
-				'id': 'response'
-			 ,'align': 'center'
-			 ,'height': '256px'
-	  	 ,'float': 'left'
-	  	 ,'text': variable + '='
-			}));
-			document.getElementById('response').style.fontSize = '28pt';
-
-			$('#response').append('<input type="text" id="solution" name="solution" style="height:50px;font-size:24pt;"></input>');
-
-			$('input[name="solution"]').keyup(function() {
-				if (!trialData.firstInputTime) {
-					var endTime = (new Date()).getTime();
-					trialData.firstInputTime = endTime - startTime;
-				}
-			})
-
-			$('#response').append($('<button>', {
-				'id': 'submitButton'
-			}));
-
-			$('#submitButton').html('Submit Answer');
-			$('#submitButton').click(function() {
-				var endTime = (new Date()).getTime();
-				trialData.submitTime = endTime - startTime;
-				trialData.userInput = document.getElementById('solution').value;
-				if (trialData.userInput && trialData.userInput===val) {
-					trialData.correctness = true;
-				}
-
-				display_element.html('');
-				block.writeData($.extend({}, trial, trialData, trial.data));
-				block.next();
-			});
+			appendContainer();
+			var eq = appendEqAndMakeGMExpr();
+			appendSubmissionBoxAndButton();
+			addEventListeners();
 
 			var startTime = (new Date()).getTime();
+
+			function appendContainer() {
+				display_element.append($('<div>', {
+		  		'id': 'container'
+		  	 ,'align': 'center'
+		  	 ,'width': '576px'
+		  	}));
+			}
+
+			function appendEqAndMakeGMExpr() {
+				$('#container').append($('<div>', {
+					'id': 'gm-eq'
+				 ,'html': equation
+				 ,'align': 'center'
+		  	 ,'height': '256px'
+		  	 ,'float': 'left'
+				}));
+				var eq = DerivationList.createStandalone($('#gm-eq')[0], {interactive:false});
+				eq.getLastRow().view.update_all();
+				return eq;
+			}
+
+			function appendSubmissionBoxAndButton() {
+				$('#container').append($('<div>', {
+					'id': 'response'
+				 ,'align': 'center'
+				 ,'height': '256px'
+		  	 ,'float': 'left'
+		  	 ,'text': variable + '='
+				}));
+				document.getElementById('response').style.fontSize = '28pt';
+
+				$('#response').append('<input type="text" id="solution" name="solution" style="height:50px;font-size:24pt;"></input>');
+
+				$('#response').append($('<button>', {
+					'id': 'submitButton'
+				}));
+
+				$('#submitButton').html('Submit Answer');
+			}
+
+			function addEventListeners() {
+				$('input[name="solution"]').keyup(function() {
+					if (!trialData.firstInputTime) {
+						var endTime = (new Date()).getTime();
+						trialData.firstInputTime = endTime - startTime;
+					}
+				});
+
+				$('#submitButton').click(function() {
+					var endTime = (new Date()).getTime();
+					trialData.submitTime = endTime - startTime;
+					trialData.userInput = document.getElementById('solution').value;
+					if (trialData.userInput && trialData.userInput===val) {
+						trialData.correctness = true;
+					}
+
+					display_element.html('');
+					//saveAndContinue(trial, trialData, block);
+					block.writeData($.extend({}, trial, trialData, trial.data));
+			  	block.next();
+				});
+			}
 		};
+
+		var saveAndContinue = function(trial, trialData, block) {
+			saveTrial(trial, trialData, block.next)
+		}
+
+		// Example save_trial code, which needs to be adapted:
+		function saveTrial(trial, trialData, finished_callback) {
+		  var saveData = $.extend({}, trial, trialData);
+		  // if (test_mode) {
+		  //   console.log('would transmit ', JSON.stringify([data]));
+		  //   finished_callback();
+		  // }
+		  // else {
+	    $.ajax({
+	      type: 'post',
+	      cache: false,
+	      url: 'db_submit.php',
+	      data: {json: JSON.stringify([saveData])
+	            ,subject_id: subject_id},
+	      success: function(data) {
+	        //console.log(data);
+	        finished_callback();
+		    }
+		  });
+		  // }
+		}
 
 		return plugin;
 	})();
